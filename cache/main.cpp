@@ -1,34 +1,39 @@
-#include<iostream>
-#include"headers/cache.h"
-#include<memory>
-#include<string>
+    #include<iostream>
+    #include"headers/cache.h"
+    #include<memory>
+    #include<string>
+    #include"headers/config.h"
+    #include<thread>
+    int main(){
 
+        CacheConfig cfg =  Config::with(15,300);
 
-int main(){
+        auto& cache = Cache<int,std::string>::Instance(cfg);
+        cache.subscribe([](const int& key,const std::string& value){
+            std::cout<<"cache update : "<<key<<" = "<<value<<std::endl;
+        });
+        cache.put(42,std::string("this is 42"));
 
-    
-    auto& cache = Cache<int,std::string>::Instance();
-    cache.subscribe([](const int& key,const std::string& value){
-        std::cout<<"cache update : "<<key<<" = "<<value<<std::endl;
-    });
-    cache.put(42,std::string("this is 42"));
+        if(!cache.get(42).expired()){
+            auto res = cache.get(42).lock();
+            std::cout<<*res<<std::flush;
+        }else{
+            std::cout<<"no value"<<std::flush;
+        }
+        std::this_thread::sleep_for(std::chrono::seconds(12));
+        if(!cache.get(42).expired()){
+            auto res = cache.get(42).lock();
+            std::cout<<"first in thread"<<*res<<std::flush;
+        }else{
+            std::cout<<"no value"<<std::flush;
+        }
 
-    auto cached = cache.get(42);
-    
-    if(!cached.expired()){
-        auto res = cached.lock();
-        std::cout<<*res<<std::endl;
+        std::this_thread::sleep_for(std::chrono::seconds(20));
+        if(!cache.get(42).expired()){
+            auto res = cache.get(42).lock();
+            std::cout<<*res<<std::flush;
+        }else{
+            std::cout<<"no value"<<std::flush;
+        }
+        
     }
-
-    cache.put(50,"key is now 50");
-    auto cached2 = cache.get(100);
-    if(!cached2.expired()){
-        auto res = cached2.lock();
-        std::cout<<"chached two is"<<*res;
-    }else{
-        std::cout<<"no cache value";
-    }
-
-    
-
-}
