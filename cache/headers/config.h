@@ -17,7 +17,7 @@ public:
         return CacheConfig{};
     }
 
-    static CacheConfig with(int seconds, int size){
+    static CacheConfig with(unsigned int  seconds, unsigned int size){
         return CacheConfig{
             std::chrono::seconds(seconds),
             static_cast<size_t>(size)
