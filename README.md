@@ -48,6 +48,7 @@ CacheConfig cfg = Config::with(20, 100); // TTL 20s, max 100 entries
 auto& cache = Cache<int, std::string>::Instance(cfg);
 
 
+---
 ##Putting and getting values
 
 cache.put(1, "Hello World");
