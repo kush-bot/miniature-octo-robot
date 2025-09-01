@@ -1,3 +1,13 @@
+Perfect! I can integrate your **test code and results** into the same GitHub-style `README.md`. This will include:
+
+* Overview of the cache library
+* API usage
+* Examples
+* Test suite demonstration
+* Sample output
+
+Here’s the complete `.md` file including your tests and outputs:
+
 ````markdown
 # C++ LRU Cache Library with TTL and Observer
 
@@ -23,7 +33,8 @@ A **template-based, in-memory LRU cache** for C++ with TTL (time-to-live) suppor
 4. [Configuration](#configuration)  
 5. [Observer Callbacks](#observer-callbacks)  
 6. [Examples](#examples)  
-7. [LRU + TTL Behavior](#lru--ttl-behavior)  
+7. [Testing](#testing)  
+8. [LRU + TTL Behavior](#lru--ttl-behavior)  
 
 ---
 
@@ -172,6 +183,121 @@ int main() {
 
 ---
 
+## Testing
+
+The library comes with a **basic test suite** using a `TestRunner` helper class.
+
+### TestRunner Usage
+
+```cpp
+TestRunner t;
+t.startTest("Test Name");
+t.assert_true(condition, "message");
+t.assert_false(condition, "message");
+t.getResults();
+```
+
+---
+
+### Included Tests
+
+1. **Basic Cache Operations**
+2. **TTL Expiry**
+3. **LRU Eviction**
+4. **Cache Configuration**
+5. **Observer Pattern**
+6. **Performance Test**
+
+### Example Test Code
+
+```cpp
+void testBasicOperation() {
+    TestRunner t_runner;
+    t_runner.startTest("Basic Cache Operations");
+
+    auto &cache = Cache<int, std::string>::Instance();
+    cache.clear();
+
+    cache.put(1, "value1");
+    auto result = cache.get(1);
+    t_runner.assert_false(result.expired(), "Value should exist after put");
+    
+    auto missing = cache.get(999);
+    t_runner.assert_true(missing.expired(), "the key should not exist");
+
+    t_runner.getResults();
+}
+```
+
+---
+
+### Sample Test Output
+
+```
+--------Testing : Basic Cache Opearations--------
+
+✅ Value should exist after put
+✅ lock should not exist
+✅ the value should match
+✅ the key should not exist
+
+Test Result
+Passed : 4
+Failed : 0
+Total : 4
+All Test cases Passed
+
+--------Testing : ttl tests--------
+
+✅ the value should exist immediately 
+✅ the value should be expired now
+
+Test Result
+Passed : 2
+Failed : 0
+Total : 2
+All Test cases Passed
+
+--------Testing : LRU evivtion test--------
+
+✅ the value should exist
+✅ the value should exist
+✅ the value should exist
+✅ the value shouldn't exist
+✅ Key 1 should still exist (recently accessed)
+✅ Key 2 should be evicted (LRU)
+✅ Key 3 should still exist
+✅ Key 4 should exist (newly added)
+
+Test Result
+Passed : 8
+Failed : 0
+Total : 8
+All Test cases Passed
+
+--------Testing : Cache Configuartion test--------
+
+✅ the value should not exist
+✅ the value should exist
+✅ the value should exist
+
+--------Testing : Observer pattren Test--------
+
+✅ the value should be equal
+✅ the value shoudl be equal
+✅ the value shoudl be equal
+
+Performence Testing
+📈 Results:
+  Insert 1000 items: 3803 μs
+  Read 1000 items: 1146 μs
+  Cache hits: 1000/1000
+  Avg insert: 3.803 μs per item
+  Avg read: 1.146 μs per item
+```
+
+---
+
 ## LRU + TTL Behavior
 
 * **LRU Eviction**: When `maxSize` is reached, the **least recently used** key is automatically removed.
@@ -180,11 +306,9 @@ int main() {
 
 ---
 
-This README provides a **complete overview** of the API, usage, configuration, and behavior, ready to use as a **GitHub README.md**.
+This README provides a **complete overview** of the cache library, usage, configuration, tests, and sample output.
 
 ```
 
 ---
 
-
-```
