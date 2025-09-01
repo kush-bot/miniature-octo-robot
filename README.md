@@ -1,7 +1,3 @@
-Absolutely! You can put the **entire content** — code, usage, examples, and explanations — into a single `README.md` file. GitHub supports **full Markdown**, so everything you’ve written, including multiple code blocks, tables, headings, and bullet points, will render correctly.
-
-Here’s how you can structure it in **one full `.md` file**:
-
 ````markdown
 # C++ LRU Cache Library with TTL and Observer
 
