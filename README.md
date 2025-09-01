@@ -1,3 +1,8 @@
+Absolutely! You can put the **entire content** — code, usage, examples, and explanations — into a single `README.md` file. GitHub supports **full Markdown**, so everything you’ve written, including multiple code blocks, tables, headings, and bullet points, will render correctly.
+
+Here’s how you can structure it in **one full `.md` file**:
+
+````markdown
 # C++ LRU Cache Library with TTL and Observer
 
 A **template-based, in-memory LRU cache** for C++ with TTL (time-to-live) support and observer callbacks. Each cache instance is **singleton per type**.
@@ -21,96 +26,173 @@ A **template-based, in-memory LRU cache** for C++ with TTL (time-to-live) suppor
 3. [Classes and Methods](#classes-and-methods)  
 4. [Configuration](#configuration)  
 5. [Observer Callbacks](#observer-callbacks)  
+6. [Examples](#examples)  
+7. [LRU + TTL Behavior](#lru--ttl-behavior)  
 
 ---
 
 ## Installation
 
-1. Copy the headers to your project:  
-   - `cache.h`  
-   - `config.h`  
-   - `observer.h`  
-2. Include in your C++ source:
+Copy the headers to your project:  
+- `cache.h`  
+- `config.h`  
+- `observer.h`  
+
+Include them in your C++ source:
 
 ```cpp
 #include "cache.h"
 #include "config.h"
 #include "observer.h"
-
-
-##Usage
-
-auto& cache = Cache<int, std::string>::Instance(); // default config
-
-##Using a custom configuration
-
-CacheConfig cfg = Config::with(20, 100); // TTL 20s, max 100 entries
-auto& cache = Cache<int, std::string>::Instance(cfg);
-
+````
 
 ---
-##Putting and getting values
 
+## Usage
+
+### Creating or accessing a cache
+
+```cpp
+auto& cache = Cache<int, std::string>::Instance(); // default config
+```
+
+### Using a custom configuration
+
+```cpp
+CacheConfig cfg = Config::with(20, 100); // TTL 20s, max 100 entries
+auto& cache = Cache<int, std::string>::Instance(cfg);
+```
+
+---
+
+### Putting and getting values
+
+```cpp
 cache.put(1, "Hello World");
 
 auto val = cache.get(1).lock(); // weak_ptr to value
 if (val) {
     std::cout << *val << std::endl;
 }
+```
 
-Checking if a key exists
+---
 
+### Checking if a key exists
+
+```cpp
 if (cache.contains(1)) {
     std::cout << "Key exists and not expired" << std::endl;
 }
+```
 
+---
 
-Clearing the cache
+### Clearing the cache
 
+```cpp
 cache.clear();
+```
 
+---
 
-Classes and Methods
-Cache<Key, Value>
+## Classes and Methods
 
-Static Methods
+### `Cache<Key, Value>`
 
-Instance(const CacheConfig &cfg = Config::Default())
-Returns a singleton cache object for this type. Optional config only affects first creation.
+* **Static Methods**
 
-Member Methods
+  * `Instance(const CacheConfig &cfg = Config::Default())`
+    Returns a singleton cache object for this type. Optional config only affects **first creation**.
 
-void put(const Key &key, const Value &value)
-Insert or update a value. Moves key to most-recently-used position.
+* **Member Methods**
 
-std::weak_ptr<Value> get(const Key &key)
-Retrieves a value if it exists and not expired; updates LRU position.
+  * `void put(const Key &key, const Value &value)`
+    Insert or update a value. Moves key to most-recently-used position.
+  * `std::weak_ptr<Value> get(const Key &key)`
+    Retrieves a value if it exists and not expired; updates LRU position.
+  * `bool contains(const Key &key)`
+    Returns true if the key exists and TTL has not expired.
+  * `void clear()`
+    Clears all cache entries.
+  * `void subscribe(Callback cb)`
+    Subscribe to change events (`put`).
 
-bool contains(const Key &key)
-Returns true if the key exists and TTL has not expired.
+---
 
-void clear()
-Clears all cache entries.
+### `CacheConfig`
 
-void subscribe(Callback cb)
-Subscribe to change events (put).
+* **Fields**
 
-CacheConfig
+  * `std::chrono::seconds ttl` — time-to-live per entry
+  * `size_t maxSize` — maximum number of entries
 
-Fields
+* **Helper Methods (Config class)**
 
-std::chrono::seconds ttl — time-to-live per entry
+  * `static CacheConfig Default()` — default config (TTL 10s, max 300)
+  * `static CacheConfig with(unsigned int seconds, unsigned int size)` — custom TTL and max size
 
-size_t maxSize — maximum number of entries
+---
 
-Helper Methods (Config class)
+### `Observer<Key, Value>`
 
-static CacheConfig Default() — default config (TTL 10s, max 300)
+* Allows subscribing to cache changes.
+* **Callback signature**: `void(const Key&, const Value&)`
 
-static CacheConfig with(unsigned int seconds, unsigned int size) — custom TTL and max size
+```cpp
+cache.subscribe([](const int& k, const std::string& v){
+    std::cout << "Key " << k << " updated with value " << v << std::endl;
+});
+```
 
-Observer<Key, Value>
+---
 
-Allows subscribing to cache changes.
+## Examples
 
-Callback signature: void(const Key&, const Value&)
+```cpp
+#include "cache.h"
+#include "config.h"
+#include <iostream>
+
+int main() {
+    CacheConfig cfg = Config::with(5, 2); // TTL 5s, max 2 entries
+    auto& cache = Cache<int, std::string>::Instance(cfg);
+
+    cache.subscribe([](const int& k, const std::string& v){
+        std::cout << "Updated key " << k << " with value " << v << std::endl;
+    });
+
+    cache.put(1, "Hello");
+    cache.put(2, "World");
+
+    auto val = cache.get(1).lock();
+    if(val) std::cout << *val << std::endl;
+
+    cache.put(3, "LRU Eviction"); // Evicts key 2 (least recently used)
+
+    return 0;
+}
+```
+
+---
+
+## LRU + TTL Behavior
+
+* **LRU Eviction**: When `maxSize` is reached, the **least recently used** key is automatically removed.
+* **TTL Expiry**: Each entry expires after `ttl` seconds. Expired entries are automatically removed on access (`get` or `contains`).
+* **Observers**: Subscribers are notified on `put` events.
+
+---
+
+This README provides a **complete overview** of the API, usage, configuration, and behavior, ready to use as a **GitHub README.md**.
+
+```
+
+---
+
+✅ You can save the entire content above as `README.md` — GitHub will render all **headings, code blocks, and lists** perfectly.  
+
+If you want, I can also **add a simple LRU + TTL flow diagram in ASCII or Mermaid**, which will make it look more professional in the README.  
+
+Do you want me to add that?
+```
