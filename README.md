@@ -186,9 +186,5 @@ This README provides a **complete overview** of the API, usage, configuration, a
 
 ---
 
-✅ You can save the entire content above as `README.md` — GitHub will render all **headings, code blocks, and lists** perfectly.  
 
-If you want, I can also **add a simple LRU + TTL flow diagram in ASCII or Mermaid**, which will make it look more professional in the README.  
-
-Do you want me to add that?
 ```
