@@ -1,12 +1,4 @@
-Perfect! I can integrate your **test code and results** into the same GitHub-style `README.md`. This will include:
 
-* Overview of the cache library
-* API usage
-* Examples
-* Test suite demonstration
-* Sample output
-
-Here’s the complete `.md` file including your tests and outputs:
 
 ````markdown
 # C++ LRU Cache Library with TTL and Observer
